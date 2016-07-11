@@ -10,12 +10,11 @@ public class Listing {
     private String date; 
     private String fullURL;
     
-    public Listing(String headline,String source, String date,String fullURL)
+    public Listing(String headline,String source, String date)
     {
         this.headline = headline; 
         this.source = source; 
         this.date = date; 
-        this.fullURL = fullURL;
     }
 
     public String getHeadline() {

@@ -10,6 +10,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
+import javafx.scene.control.TableView;
 import org.bson.Document;
 
 
@@ -67,6 +68,36 @@ public class MongoConnection {
         {
             cursor.close();
         }
+       
+    }
+    
+    //return data in the form of a table view 
+    public TableView<Listing> getTableListings(String database){
+        TableView<Listing> table = new TableView<>(); 
+        MongoCollection<Document> coll = db.getCollection(database);
+        MongoCursor<Document> cursor = coll.find().iterator(); 
+        try
+        {
+            while(cursor.hasNext()){
+                Document doc = cursor.next();
+                String description = (String) doc.get("description");
+                String date = (String) doc.get("date"); 
+                String src = (String) doc.get("src"); 
+                Double epoch = (Double) doc.get("epoch"); 
+                Listing headline = new Listing(description, src, date); 
+                table.getItems().add(headline);
+            }
+        }
+        catch(Exception e)
+        {
+            System.out.println("Error creating table");
+            e.printStackTrace();
+        }
+        finally
+        {
+            cursor.close();
+        }
+        return table; 
     }
     
     
