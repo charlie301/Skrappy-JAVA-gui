@@ -6,6 +6,7 @@
 package skrappydb;
 
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -31,6 +32,8 @@ public class SkrappyDB extends Application {
     BorderPane pane = new BorderPane(); 
     Scene scene; 
     ListingBook lb = new ListingBook();
+    TableView<Listing> news;
+    ObservableList<Listing> array; 
             
    //border.TOP componenets
     HBox hbox;
@@ -49,13 +52,19 @@ public class SkrappyDB extends Application {
     @Override
     public void start(Stage primaryStage) {
        
-        MongoConnection test = new MongoConnection();
-        test.getListings("penews");
+        //Set up mongo connection and create observavble list
+        MongoConnection connection = new MongoConnection();
+        array = connection.getTableListings("penews");
+        
+        //create the table from the database 
+        news = createTable(array);
     
+        //--> Add the search features onto the pane.RIGHT
         
         //add componenets to the window
         pane.setTop(topStream());
         pane.setLeft(leftStream());
+        pane.setCenter(news);
         
         scene = new Scene(pane);
         primaryStage.setScene(scene);
@@ -109,9 +118,10 @@ public class SkrappyDB extends Application {
         return vbox; 
     }
     
-    public TableView<Listing> createTable(){
+    public TableView<Listing> createTable(ObservableList<Listing> arrayListings){
         
         TableView<Listing> book = new TableView<>();
+        book.setItems(arrayListings);
         
         TableColumn<Listing, String> colHeading = new TableColumn("Headline");
                 colHeading.setMinWidth(300);
@@ -123,12 +133,14 @@ public class SkrappyDB extends Application {
                 colSrc.setCellValueFactory(
                     new PropertyValueFactory<Listing, String>("Source"));
                 
-        TableColumn<Listing,Double> colDate = new TableColumn("Date");
+        TableColumn<Listing,String> colDate = new TableColumn("Date");
                 colDate.setMinWidth(300);
                 colDate.setCellValueFactory(
-                        new PropertyValueFactory<Listing, Double>("Date"));
-        
+                        new PropertyValueFactory<Listing, String>("Date"));
                 
+        book.getColumns().addAll(colHeading,colDate,colSrc);
+        
+        return book;
     }
     
    
